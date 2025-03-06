@@ -8,9 +8,10 @@ import { makeCounterProvider } from '@willsoto/nestjs-prometheus';
   providers: [
     FetcherService,
     makeCounterProvider({
-      name: 'ad_impressions_total',
-      help: 'Total ad impressions fetched from GraphQL',
+      name: 'ad_impressions',
+      help: 'ad impressions fetched from GraphQL',
     }),
   ],
+  exports: [FetcherService],
 })
 export class FercherModule {}

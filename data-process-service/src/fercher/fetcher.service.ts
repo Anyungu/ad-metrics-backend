@@ -1,17 +1,27 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectMetric } from '@willsoto/nestjs-prometheus';
+import { addDays, differenceInDays, format, parseISO } from 'date-fns';
 import { GraphQLClient, gql } from 'graphql-request';
-import { Counter } from 'prom-client';
+import { Gauge } from 'prom-client';
+import { InsightResponse } from 'src/models/graphql-types';
 
 @Injectable()
 export class FetcherService {
   private readonly logger = new Logger(FetcherService.name);
   private readonly gqlClient: GraphQLClient;
-  private readonly counter: Counter<string>;
+  private readonly gauge: Gauge<string>;
 
-  constructor(@InjectMetric('ad_impressions_total') counter: Counter<string>) {
-    this.gqlClient = new GraphQLClient('http://127.0.0.1:3001/graphql');
-    this.counter = counter;
+  constructor(
+    @InjectMetric('ad_impressions') gauge: Gauge<string>,
+    private configService: ConfigService,
+  ) {
+    const insightsBaseUrl = this.configService.get<string>('INSIGHTS_BASE_URL');
+    if (!insightsBaseUrl) {
+      throw new Error('INSIGHTS_BASE_URL is not defined in the configuration.');
+    }
+    this.gqlClient = new GraphQLClient(insightsBaseUrl);
+    this.gauge = gauge;
   }
 
   async fetchAndStoreData() {
@@ -28,13 +38,23 @@ export class FetcherService {
     `;
 
     try {
-      const response: any = await this.gqlClient.request(query);
+      const response = await this.gqlClient.request<{
+        getAdInsights: InsightResponse;
+      }>(query);
+
       const insights = response.getAdInsights.data;
 
-      console.log(insights);
-
-      insights.forEach((insight: any) => {
-        this.counter.inc(Number(insight.impressions));
+      // estimate date average!
+      insights.forEach((insight) => {
+        const startDate = parseISO(insight.date_start);
+        const endDate = parseISO(insight.date_stop);
+        const daysCount = differenceInDays(endDate, startDate) + 1;
+        const avgDailyImpressions = Number(insight.impressions) / daysCount;
+        // stor each as a daily average
+        for (let i = 0; i < daysCount; i++) {
+          const currentDate = format(addDays(startDate, i), 'yyyy-MM-dd');
+          this.gauge.set({ date: currentDate }, avgDailyImpressions);
+        }
       });
 
       this.logger.log(`Fetched & stored ${insights.length} ad insights.`);

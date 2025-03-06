@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { InsightResponse } from '../models/insight-response.dto';
+import { InsightResponse } from 'src/models/graphql-types';
 
 @Injectable()
 export class InsightService {

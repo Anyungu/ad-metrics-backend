@@ -1,6 +1,6 @@
 import { Resolver, Query } from '@nestjs/graphql';
 import { InsightService } from './insight.service';
-import { InsightResponse } from '../models/insight-response.dto';
+import { InsightResponse } from '@workspace/shared-types';
 
 // Acting controller
 @Resolver()

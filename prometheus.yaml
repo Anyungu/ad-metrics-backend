@@ -1,0 +1,7 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: "data-process-service"
+    static_configs:
+      - targets: ["data-process-service:8080"]

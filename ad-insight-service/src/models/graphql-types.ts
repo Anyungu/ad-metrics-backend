@@ -1,12 +1,12 @@
 import { ObjectType, Field } from '@nestjs/graphql';
-import { Insight } from '../models/insight.model';
+import { Insight } from './insight.model';
 
 @ObjectType()
 class Cursors {
-  @Field()
+  @Field(() => String)
   before: string;
 
-  @Field()
+  @Field(() => String)
   after: string;
 }
 
