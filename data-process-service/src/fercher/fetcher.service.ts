@@ -1,6 +1,5 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { InjectMetric } from '@willsoto/nestjs-prometheus';
 import { addDays, differenceInDays, format, parseISO } from 'date-fns';
 import { GraphQLClient, gql } from 'graphql-request';
 import { Gauge } from 'prom-client';
@@ -10,10 +9,9 @@ import { InsightResponse } from 'src/models/graphql-types';
 export class FetcherService {
   private readonly logger = new Logger(FetcherService.name);
   private readonly gqlClient: GraphQLClient;
-  private readonly gauge: Gauge<string>;
 
   constructor(
-    @InjectMetric('ad_impressions') gauge: Gauge<string>,
+    @Inject('ad_impressions') private readonly gauge: Gauge<string>,
     private configService: ConfigService,
   ) {
     const insightsBaseUrl = this.configService.get<string>('INSIGHTS_BASE_URL');

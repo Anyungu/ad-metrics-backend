@@ -11,10 +11,8 @@ RUN npm install
 COPY . .
 
 ARG SERVICE
-WORKDIR /app/$SERVICE
 
 RUN npm run build --filter=$SERVICE
-RUN npm prune --production
 
 # Stage 2: Production Stage
 FROM node:22 AS runner
@@ -23,6 +21,7 @@ WORKDIR /app
 
 ARG SERVICE
 
+COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/$SERVICE/dist ./dist  
 COPY --from=builder /app/$SERVICE/package.json ./
 
