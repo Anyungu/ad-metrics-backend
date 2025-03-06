@@ -4,6 +4,10 @@ import { SchedulerModule } from './scheduler/scheduler.module';
 import { MetricsModule } from './metrics/metrics.module';
 
 @Module({
-  imports: [FercherModule, SchedulerModule, MetricsModule],
+  imports: [
+    FercherModule,
+    SchedulerModule,
+    MetricsModule,
+  ],
 })
 export class AppModule {}

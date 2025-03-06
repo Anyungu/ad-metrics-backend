@@ -1,0 +1,15 @@
+import { Injectable, Logger } from '@nestjs/common';
+import { Cron } from '@nestjs/schedule';
+import { FetcherService } from 'src/fercher/fetcher.service';
+
+@Injectable()
+export class TaskService {
+  private readonly logger: Logger = new Logger(TaskService.name);
+  constructor(private readonly fetcherService: FetcherService) {}
+
+  @Cron('20 * * * * *')
+  handleCron() {
+    this.logger.debug('Called when the current second is 20');
+    void this.fetcherService.fetchAndStoreData();
+  }
+}

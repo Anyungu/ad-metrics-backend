@@ -1,16 +1,13 @@
 import { Module } from '@nestjs/common';
 import { FetcherService } from './fetcher.service';
 import { FetcherController } from './fetcher.controller';
-import { makeCounterProvider } from '@willsoto/nestjs-prometheus';
+import { ConfigModule } from '@nestjs/config';
+import { MetricsModule } from '../metrics/metrics.module';
 
 @Module({
+  imports: [ConfigModule.forRoot(), MetricsModule],
   controllers: [FetcherController],
-  providers: [
-    FetcherService,
-    makeCounterProvider({
-      name: 'ad_impressions_total',
-      help: 'Total ad impressions fetched from GraphQL',
-    }),
-  ],
+  providers: [FetcherService],
+  exports: [FetcherService],
 })
 export class FercherModule {}
