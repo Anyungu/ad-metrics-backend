@@ -55,3 +55,4 @@ pids
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 **/report.*.json
+.turbo

@@ -1,0 +1,3 @@
+packages:
+  - "ad-insight-service"
+  - "data-process-service"
