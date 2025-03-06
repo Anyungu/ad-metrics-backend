@@ -5,21 +5,16 @@ WORKDIR /app
 
 ENV NODE_ENV=development
 
-COPY package.json pnpm-lock.yaml ./
-RUN corepack enable && pnpm install --no-frozen-lockfile
+COPY package.json package-lock.json ./
+RUN npm install
+
+COPY . .
 
 ARG SERVICE
-
 WORKDIR /app/$SERVICE
 
-COPY $SERVICE/package.json ./
-RUN corepack enable && pnpm install --no-frozen-lockfile
-
-COPY $SERVICE/ .
-
-RUN pnpm build
-
-RUN pnpm prune --prod
+RUN npm run build --filter=$SERVICE
+RUN npm prune --production
 
 # Stage 2: Production Stage
 FROM node:22 AS runner
@@ -28,8 +23,6 @@ WORKDIR /app
 
 ARG SERVICE
 
-
-COPY --from=builder /app/$SERVICE/node_modules ./node_modules
 COPY --from=builder /app/$SERVICE/dist ./dist  
 COPY --from=builder /app/$SERVICE/package.json ./
 
