@@ -7,7 +7,8 @@ export class TaskService {
   private readonly logger: Logger = new Logger(TaskService.name);
   constructor(private readonly fetcherService: FetcherService) {}
 
-  @Cron('20 * * * * *')
+  // faster times for clean testing
+  @Cron('15 * * * * *')
   handleCron() {
     this.logger.debug('Called when the current second is 20');
     void this.fetcherService.fetchAndStoreData();
