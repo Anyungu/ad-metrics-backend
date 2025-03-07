@@ -6,10 +6,11 @@ import { InsightResponse } from 'src/models/graphql-types';
 export class InsightService {
   getAdInsights(): InsightResponse {
     const startDate = faker.date.between({
-      from: new Date(new Date().getFullYear(), 0, 1),
-      to: new Date(new Date().getFullYear(), 2, 31),
+      from: new Date(new Date().getFullYear() - 1, 10, 1),
+      to: new Date(new Date().getFullYear(), 7, 31),
     });
-    const daysToAdd = faker.number.int({ min: 0, max: 4 });
+
+    const daysToAdd = faker.number.int({ min: 1, max: 13 });
     const endDate = new Date(startDate);
     endDate.setDate(startDate.getDate() + daysToAdd);
 
