@@ -1,0 +1,10 @@
+route:
+  receiver: "data-process-service"
+  group_wait: 1s  
+  group_interval: 30s  
+  repeat_interval: 5m
+receivers:
+  - name: "data-process-service"
+    webhook_configs:
+      - url: "http://data-process-service:8080/webhook"
+        send_resolved: true

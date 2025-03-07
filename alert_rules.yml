@@ -1,0 +1,12 @@
+groups:
+  - name: ad_alerts
+    rules:
+      - alert: NewAdImpressionsData
+        expr: rate(ad_impressions_count[45s]) > 0
+        for: 0s
+        labels:
+          severity: info
+          unique_id: "{{ $labels.instance }}-{{ $labels.job }}" 
+        annotations:
+          summary: "New ad impressions data received"
+          description: "New ad impressions data is available."
